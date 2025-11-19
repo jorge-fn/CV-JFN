@@ -159,6 +159,62 @@ window.addEventListener('DOMContentLoaded', event => {
 
     bindTranslationControls();
 
+    // --- Render email into a canvas so the address does not appear as text in the DOM ---
+    (function renderEmailCanvas(){
+        const span = document.getElementById('contact-email-canvas');
+        if (!span) return;
+
+        // Email stored as char codes to avoid literal appearance
+        const userCodes = [106,102,114,97,110,99,111,115,103,50,48,48,54]; // jfrancosg2006
+        const domainCodes = [103,109,97,105,108,46,99,111,109]; // gmail.com
+        const user = String.fromCharCode(...userCodes);
+        const domain = String.fromCharCode(...domainCodes);
+        const email = user + '@' + domain;
+
+        // Create canvas and match font from computed style if possible
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const style = window.getComputedStyle(span);
+        // derive font-size and family
+        const fontSize = style.fontSize || '16px';
+        const fontFamily = style.fontFamily || 'Arial, sans-serif';
+        ctx.font = `${fontSize} ${fontFamily}`;
+
+        // measure text and size canvas
+        const metrics = ctx.measureText(email);
+        const paddingX = 6;
+        const paddingY = Math.ceil(parseFloat(fontSize) * 0.6);
+        canvas.width = Math.ceil(metrics.width) + paddingX * 2;
+        canvas.height = Math.ceil(parseFloat(fontSize)) + paddingY * 2;
+
+        // redraw with proper font after sizing
+        ctx.font = `${fontSize} ${fontFamily}`;
+        // draw text (use link color)
+        ctx.fillStyle = style.color || '#0d6efd';
+        ctx.textBaseline = 'top';
+        ctx.fillText(email, paddingX, paddingY / 2);
+
+        // replace span content with canvas
+        span.textContent = '';
+        canvas.style.display = 'inline-block';
+        canvas.style.verticalAlign = 'middle';
+        canvas.style.cursor = 'pointer';
+        span.appendChild(canvas);
+
+        // click/keyboard interaction: open mailto and copy to clipboard
+        function triggerMail() {
+            // open mail client
+            window.location.href = 'mailto:' + email;
+            // try to copy to clipboard silently
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email).catch(() => {});
+            }
+        }
+
+        span.addEventListener('click', (e) => { e.preventDefault(); triggerMail(); });
+        span.addEventListener('keypress', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerMail(); } });
+    })();
+
     // --- Blue tech particles background ---
     let particleStopFn = null;
     function initParticles() {
