@@ -121,6 +121,41 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     }
 
+    // Translate page from English back to Spanish using reverse mapping
+    function translateToSpanish() {
+        // If we have a full snapshot (original Spanish), prefer restoring it for fidelity
+        if (originalBodyHTML !== null) {
+            document.body.innerHTML = originalBodyHTML;
+            originalBodyHTML = null;
+            bindTranslationControls();
+            try { if (typeof particleStopFn === 'function') particleStopFn(); } catch (e) {}
+            particleStopFn = initParticles();
+            return;
+        }
+
+        // Otherwise build reverse mapping and perform in-place replacements
+        const translations_en_es = Object.fromEntries(
+            Object.entries(translations_es_en).map(([es, en]) => [en, es])
+        );
+        const root = document.body;
+        if (!root) return;
+        const elements = root.querySelectorAll('*');
+        elements.forEach(el => {
+            if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+            if (el.id === 'toggle-translate' || el.id === 'btn-revert') return;
+            if (el.dataset.original === undefined) {
+                el.dataset.original = el.innerHTML;
+            }
+            let html = el.innerHTML;
+            for (const [en, es] of Object.entries(translations_en_es)) {
+                if (html.indexOf(en) !== -1) {
+                    html = html.split(en).join(es);
+                }
+            }
+            el.innerHTML = html;
+        });
+    }
+
     function bindTranslationControls() {
         const toggleBtn = document.getElementById('toggle-translate');
         if (toggleBtn) {
@@ -153,6 +188,33 @@ window.addEventListener('DOMContentLoaded', event => {
                     tb.dataset.translated = 'false';
                     tb.setAttribute('aria-pressed', 'false');
                 }
+            });
+        }
+
+        // EN / ES explicit buttons
+        const btnEn = document.getElementById('btn-en');
+        if (btnEn) {
+            const newEn = btnEn.cloneNode(true);
+            btnEn.parentNode.replaceChild(newEn, btnEn);
+            newEn.addEventListener('click', () => {
+                translateToEnglish();
+                // update pressed states
+                try { document.getElementById('btn-en').setAttribute('aria-pressed', 'true'); } catch(e){}
+                try { document.getElementById('btn-es').setAttribute('aria-pressed', 'false'); } catch(e){}
+                // also update toggle button state if present
+                const tb = document.getElementById('toggle-translate'); if (tb) { tb.dataset.translated = 'true'; tb.setAttribute('aria-pressed', 'true'); }
+            });
+        }
+
+        const btnEs = document.getElementById('btn-es');
+        if (btnEs) {
+            const newEs = btnEs.cloneNode(true);
+            btnEs.parentNode.replaceChild(newEs, btnEs);
+            newEs.addEventListener('click', () => {
+                translateToSpanish();
+                try { document.getElementById('btn-en').setAttribute('aria-pressed', 'false'); } catch(e){}
+                try { document.getElementById('btn-es').setAttribute('aria-pressed', 'true'); } catch(e){}
+                const tb = document.getElementById('toggle-translate'); if (tb) { tb.dataset.translated = 'false'; tb.setAttribute('aria-pressed', 'false'); }
             });
         }
     }
