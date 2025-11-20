@@ -159,6 +159,46 @@ window.addEventListener('DOMContentLoaded', event => {
 
     bindTranslationControls();
 
+    // --- Theme (dark/light) toggle and persistence ---
+    const THEME_KEY = 'cv_theme';
+    function applyTheme(theme) {
+        const body = document.body;
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            try { const b = document.getElementById('btn-theme'); if (b) { b.innerHTML = '<i class="fas fa-sun"></i>'; b.setAttribute('aria-pressed','true'); } } catch(e){}
+        } else {
+            body.classList.remove('dark-mode');
+            try { const b = document.getElementById('btn-theme'); if (b) { b.innerHTML = '<i class="fas fa-moon"></i>'; b.setAttribute('aria-pressed','false'); } } catch(e){}
+        }
+        try { localStorage.setItem(THEME_KEY, theme); } catch(e){}
+    }
+
+    function toggleTheme() {
+        const current = (localStorage.getItem(THEME_KEY) === 'dark') ? 'dark' : 'light';
+        const next = (current === 'dark') ? 'light' : 'dark';
+        applyTheme(next);
+        showLanguageNotification(next === 'dark' ? 'Modo: Oscuro' : 'Mode: Light');
+    }
+
+    // initialize theme from localStorage (or prefer dark if user prefers dark)
+    (function initTheme() {
+        let theme = 'light';
+        try { theme = localStorage.getItem(THEME_KEY) || theme; } catch(e){}
+        // if no explicit choice, prefer system preference
+        if (!localStorage.getItem(THEME_KEY)) {
+            try {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+            } catch(e){}
+        }
+        applyTheme(theme);
+        const btnTheme = document.getElementById('btn-theme');
+        if (btnTheme) {
+            const newBtn = btnTheme.cloneNode(true);
+            btnTheme.parentNode.replaceChild(newBtn, btnTheme);
+            newBtn.addEventListener('click', toggleTheme);
+        }
+    })();
+
     // --- Render email into a canvas so the address does not appear as text in the DOM ---
     (function renderEmailCanvas(){
         const span = document.getElementById('contact-email-canvas');
