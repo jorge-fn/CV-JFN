@@ -38,16 +38,51 @@
             #sideNav, .navbar {
                 z-index: 3;
             }
+            /* Language/button overlay positioning */
+            .navbar-brand { position: relative; }
+            .lang-overlay { position:absolute; left:50%; transform:translateX(-50%); top:-38px; z-index:4; display:flex; gap:6px; }
+            .lang-overlay .btn { padding-left:8px; padding-right:8px; font-weight:600; }
+            /* monochrome icon color: black in light mode, white in dark mode */
+            .lang-overlay .btn i { color: #111; font-size:0.95rem; }
+            body.dark-mode .lang-overlay .btn i { color: #fff; }
+            @media (max-width: 991px) { .lang-overlay { top:6px; } }
+
+            /* Theme corner positioning */
+            .theme-corner { position: fixed; top: 12px; left: 12px; z-index: 1060; }
+            .theme-corner .btn { padding:6px 8px; border-radius:6px; }
+            .theme-corner .btn i { color: #111; }
+            body.dark-mode .theme-corner .btn i { color: #fff; }
+
+            /* Toast for language/theme notifications */
+            #lang-toast { position: fixed; top: 84px; right: 20px; z-index: 9999; background: rgba(0,0,0,0.75); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transition: opacity 220ms ease-in-out, transform 220ms ease-in-out; transform: translateY(-6px); pointer-events: none; }
+            #lang-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+            /* Dark mode styles applied when `body.dark-mode` is present */
+            body.dark-mode { background-color: #071022; color: #dbeefc; }
+            body.dark-mode .resume-section { background: transparent; }
+            body.dark-mode .navbar { background-color: #052233 !important; }
+            body.dark-mode a, body.dark-mode .nav-link { color: #cfeefd !important; }
+            body.dark-mode .text-primary { color: #7ad3ff !important; }
+            body.dark-mode .subheading, body.dark-mode .lead { color: #c7eaff; }
+            body.dark-mode .social-icons .social-icon i { color: #cfeefd; }
+            body.dark-mode #lang-toast { background: rgba(10,20,30,0.9); color: #e6f7ff; }
         </style>
     </head> 
     <body id="page-top">
         <!-- Particle background canvas for a blue-tech effect -->
         <canvas id="particle-canvas" aria-hidden="true"></canvas>
+        <!-- Theme button fixed to top-left corner -->
+        <div class="theme-corner" aria-hidden="false">
+            <button id="btn-theme" class="btn btn-sm btn-outline-light" aria-pressed="false" title="Toggle theme"><i class="fas fa-moon"></i></button>
+        </div>
         <!-- Navigation--> 
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
                 <a class="navbar-brand js-scroll-trigger" href="#page-top">
                 <span class="d-block d-lg-none">Jorge Francos</span>
-                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="assets/img/FotoCV.jpg" alt="Foto de perfil" /></span>
+                <span class="d-none d-lg-block" style="position:relative;">
+                    <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="assets/img/FotoCV.jpg" alt="Foto de perfil" />
+                    <div class="lang-overlay" role="group" aria-label="Theme control" style="display:none;"></div>
+                </span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
