@@ -48,8 +48,8 @@
             @media (max-width: 991px) { .lang-overlay { top:6px; } }
 
             /* Theme corner positioning */
-            .theme-corner { position: fixed; top: 12px; left: 12px; z-index: 1060; }
-            .theme-corner .btn { padding:6px 8px; border-radius:6px; }
+            .theme-corner { position: fixed; top: 12px; left: 12px; z-index: 1060; display: flex; gap: 6px; }
+            .theme-corner .btn { padding:6px 8px; border-radius:6px; font-weight: 600; font-size: 0.8rem; }
             .theme-corner .btn i { color: #111; }
             body.dark-mode .theme-corner .btn i { color: #fff; }
 
@@ -71,9 +71,11 @@
     <body id="page-top">
         <!-- Particle background canvas for a blue-tech effect -->
         <canvas id="particle-canvas" aria-hidden="true"></canvas>
-        <!-- Theme button fixed to top-left corner -->
+        <!-- Theme and language buttons fixed to top-left corner -->
         <div class="theme-corner" aria-hidden="false">
             <button id="btn-theme" class="btn btn-sm btn-outline-light" aria-pressed="false" title="Toggle theme"><i class="fas fa-moon"></i></button>
+            <button id="btn-eng" class="btn btn-sm btn-outline-light" aria-pressed="false" title="English">ENG</button>
+            <button id="btn-esp" class="btn btn-sm btn-outline-light" aria-pressed="true" title="Español">ESP</button>
         </div>
         <!-- Navigation--> 
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
@@ -97,6 +99,7 @@
             </div>
         </nav>
         <!-- Page Content-->
+        <div id="lang-toast" role="status" aria-live="polite"></div>
         <div class="container-fluid p-0">
             <!-- About-->
             <section class="resume-section" id="about">
