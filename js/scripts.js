@@ -76,6 +76,11 @@ window.addEventListener('DOMContentLoaded', event => {
     // We'll keep a full snapshot of the body before the first translation to ensure a reliable revert.
     let originalBodyHTML = null;
 
+    // Capture the original HTML on page load (before any translation)
+    (function captureOriginalHTML() {
+        originalBodyHTML = document.body.innerHTML;
+    })();
+
     function translateToEnglish() {
         if (originalBodyHTML === null) {
             originalBodyHTML = document.body.innerHTML;
@@ -104,6 +109,7 @@ window.addEventListener('DOMContentLoaded', event => {
             document.body.innerHTML = originalBodyHTML;
             originalBodyHTML = null;
             bindTranslationControls();
+            bindLanguageButtons();
             // restart particles since the DOM was replaced
             try { if (typeof particleStopFn === 'function') particleStopFn(); } catch (e) {}
             particleStopFn = initParticles();
@@ -161,6 +167,20 @@ window.addEventListener('DOMContentLoaded', event => {
 
     // --- Theme (dark/light) toggle and persistence ---
     const THEME_KEY = 'cv_theme';
+
+    // Small floating notification to confirm language/theme change
+    function showLanguageNotification(message) {
+        let toast = document.getElementById('lang-toast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('show');
+        // clear previous timer if any
+        if (toast._hideTimer) { clearTimeout(toast._hideTimer); }
+        toast._hideTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 1400);
+    }
+
     function applyTheme(theme) {
         const body = document.body;
         if (theme === 'dark') {
@@ -198,6 +218,37 @@ window.addEventListener('DOMContentLoaded', event => {
             newBtn.addEventListener('click', toggleTheme);
         }
     })();
+
+    // --- Bind language buttons (ENG/ESP) ---
+    function bindLanguageButtons() {
+        const btnEng = document.getElementById('btn-eng');
+        if (btnEng) {
+            const newEng = btnEng.cloneNode(true);
+            btnEng.parentNode.replaceChild(newEng, btnEng);
+            newEng.addEventListener('click', () => {
+                translateToEnglish();
+                bindLanguageButtons();
+                try { document.getElementById('btn-eng').setAttribute('aria-pressed', 'true'); } catch(e){}
+                try { document.getElementById('btn-esp').setAttribute('aria-pressed', 'false'); } catch(e){}
+                showLanguageNotification('Language: English');
+            });
+        }
+
+        const btnEsp = document.getElementById('btn-esp');
+        if (btnEsp) {
+            const newEsp = btnEsp.cloneNode(true);
+            btnEsp.parentNode.replaceChild(newEsp, btnEsp);
+            newEsp.addEventListener('click', () => {
+                revertToOriginal();
+                bindLanguageButtons();
+                try { document.getElementById('btn-eng').setAttribute('aria-pressed', 'false'); } catch(e){}
+                try { document.getElementById('btn-esp').setAttribute('aria-pressed', 'true'); } catch(e){}
+                showLanguageNotification('Idioma: Español');
+            });
+        }
+    }
+
+    bindLanguageButtons();
 
     // --- Render email into a canvas so the address does not appear as text in the DOM ---
     (function renderEmailCanvas(){
