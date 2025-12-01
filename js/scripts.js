@@ -102,6 +102,9 @@ window.addEventListener('DOMContentLoaded', event => {
             }
             el.innerHTML = html;
         });
+        // After changing DOM content, re-bind controls so buttons keep working
+        try { bindLanguageButtons(); } catch (e) {}
+        try { bindThemeButton(); } catch (e) {}
     }
 
     function revertToOriginal() {
@@ -110,6 +113,7 @@ window.addEventListener('DOMContentLoaded', event => {
             originalBodyHTML = null;
             bindTranslationControls();
             bindLanguageButtons();
+            bindThemeButton();
             // restart particles since the DOM was replaced
             try { if (typeof particleStopFn === 'function') particleStopFn(); } catch (e) {}
             particleStopFn = initParticles();
@@ -211,13 +215,21 @@ window.addEventListener('DOMContentLoaded', event => {
             } catch(e){}
         }
         applyTheme(theme);
+        bindThemeButton();
+    })();
+
+    // Bind (or rebind) the theme button click handler. Call after DOM replacements.
+    function bindThemeButton() {
         const btnTheme = document.getElementById('btn-theme');
-        if (btnTheme) {
+        if (!btnTheme) return;
+        try {
             const newBtn = btnTheme.cloneNode(true);
             btnTheme.parentNode.replaceChild(newBtn, btnTheme);
             newBtn.addEventListener('click', toggleTheme);
+        } catch (e) {
+            // ignore
         }
-    })();
+    }
 
     // --- Bind language buttons (ENG/ESP) ---
     function bindLanguageButtons() {
