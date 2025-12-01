@@ -1,0 +1,21 @@
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  # Content-Security-Policy: restrict external origins to the minimal required CDNs.
+  # Adjust this policy if you add/remove external resources or inline scripts/styles.
+  Content-Security-Policy: default-src 'self'; base-uri 'self';
+    script-src 'self' https://cdn.jsdelivr.net https://use.fontawesome.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+    font-src 'self' https://fonts.gstatic.com https://use.fontawesome.com data:;
+    img-src 'self' data: https:;
+    connect-src 'self';
+    frame-ancestors 'none';
+    form-action 'self';
+
+# Notes:
+# - This file is in Netlify "_headers" format. If you deploy elsewhere, adapt to your host's header configuration (e.g., Apache, Nginx, Vercel config).
+# - 'unsafe-inline' is present for style-src because the page includes a small amount of inline CSS. If you remove inline styles, remove 'unsafe-inline'.
+# - Adjust sources as you migrate CDN choices or add new external services.
