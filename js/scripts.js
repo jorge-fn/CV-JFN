@@ -338,12 +338,10 @@ window.addEventListener('DOMContentLoaded', event => {
     let particleStopFn = null;
     function initParticles() {
         const canvas = document.getElementById('particle-canvas');
-        console.log('initParticles: canvas element ->', canvas);
         if (!canvas) return () => { console.warn('Particle canvas not found'); };
         const ctx = canvas.getContext('2d');
         let w = 0, h = 0;
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        console.log('initParticles: prefersReducedMotion =', prefersReducedMotion);
 
         function resize() {
             w = canvas.width = window.innerWidth;
