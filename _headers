@@ -6,14 +6,7 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   # Content-Security-Policy: restrict external origins to the minimal required CDNs.
   # Adjust this policy if you add/remove external resources or inline scripts/styles.
-  Content-Security-Policy: default-src 'self'; base-uri 'self';
-    script-src 'self' https://cdn.jsdelivr.net https://use.fontawesome.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
-    font-src 'self' https://fonts.gstatic.com https://use.fontawesome.com data:;
-    img-src 'self' data: https:;
-    connect-src 'self';
-    frame-ancestors 'none';
-    form-action 'self';
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; script-src 'self' https://cdn.jsdelivr.net https://use.fontawesome.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://use.fontawesome.com data:; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; form-action 'self';
 
 # Notes:
 # - This file is in Netlify "_headers" format. If you deploy elsewhere, adapt to your host's header configuration (e.g., Apache, Nginx, Vercel config).
